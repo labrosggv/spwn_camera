@@ -1,0 +1,56 @@
+constants = import "cam_constants.spwn";
+camera_triggers = import "camera_triggers.spwn";
+
+extract obj_props;
+extract constants;
+extract cam_props;
+extract modes;
+extract camera_triggers;
+
+type @camera
+
+impl @camera
+{
+    zoom: (amount: @number, duration: @number = 0.5)
+    {
+        camera_zoom(amount, duration);
+    },
+    move_to: (target: @group, duration: @number = 0.5, easing: @number = 0, smooth_velocity: @bool = false, smooth_velocity_mod: @number = 0)
+    {
+        static_camera(target, duration, false, false, easing, false, smooth_velocity, smooth_velocity_mod);
+    },
+    follow_player: (duration: @number = 0.5)
+    {
+        let instant = true;
+        if (duration > 0)
+        {
+            instant = false;
+        }
+        static_camera(0g, duration, true, instant);
+    },
+    follow: (target: @group, duration: @number = 0.5, easing: @number = 0, smooth_velocity: @bool = false, smooth_velocity_mod: @number = 0)
+    {
+        static_camera(target, duration, false, false, easing, true, smooth_velocity, smooth_velocity_mod);
+    },
+    offset: (x_offset:@number, y_offset:@number = 0, duration:@number = 0.5)
+    {
+        let mode = NONE
+        if (x_offset == 0)
+        {
+            mode = X_ONLY
+        } else if (y_offset == 0)
+        {
+            mode = Y_ONLY
+        }
+        camera_offset(x_offset, y_offset, duration, mode);
+    },
+    reset_offset: (duration:@number = 0.5)
+    {
+        camera_offset(0, 0, duration);
+    }
+}
+
+return {
+    cam_props: cam_props,
+    camera: @camera
+}
